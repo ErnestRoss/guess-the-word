@@ -15,7 +15,7 @@ const message = document.querySelector(".message");
 const playAgainBtn = document.querySelector(".play-again");
 
 let word = "magnolia";
-const guessed = [];
+let guessed = [];
 let remGuess = 8;
 
 const getWord = async function () {
@@ -116,6 +116,7 @@ const updateRemGuess = function(guess) {
 if (remGuess === 0) {
     message.innerHTML = `Game over! The word was <span class="highlight">${word}</span>.`;
     remSpan.innerText = `${remGuess} guesses`;
+    startOver();
   } else if (remGuess === 1) {
     remSpan.innerText = `${remGuess} guess`;
   } else {
@@ -127,8 +128,30 @@ const checkIfWin = function () {
     if (word.toUpperCase() === progress.innerText) {
         message.classList.add("win");
         message.innerHTML = `<p class="highlight">You guessed the correct word! Congrats!</p>`;
+        startOver();
     }
 };
 
+const startOver = function () {
+    button.classList.add("hide");
+    remElement.classList.add("hide");
+    guessedElement.classList.add("hide");
+    playAgainBtn.classList.remove("hide");
+  };
 
+  playAgainBtn.addEventListener("click", function () {
+    // Reset the game
+    message.classList.remove("win");
+    guessed = [];
+    remGuess = 8;
+    remSpan.innerText = `${remGuess} guesses`;
+    guessedElement.innerHTML = "";
+    message.innerText = "";
+    getWord();
+  
+    button.classList.remove("hide");
+    playAgainBtn.classList.add("hide");
+    remElement.classList.remove("hide");
+    guessedElement.classList.remove("hide");
+  });
 
