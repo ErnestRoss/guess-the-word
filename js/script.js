@@ -14,9 +14,19 @@ const message = document.querySelector(".message");
 /* Play again button */
 const playAgainBtn = document.querySelector(".play-again");
 
-const word = "magnolia";
+let word = "magnolia";
 const guessed = [];
+let remGuess = 8;
 
+const getWord = async function () {
+    const response = await fetch("https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt");
+    const words = await response.text();
+    const wordArray = words.split("\n");
+    const randomIndex = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIndex].trim();
+    obfuscate(word);
+  };
+  
 const obfuscate = function(word) {
     const obfuscateLetters = [];
     for (const letter of word) {
@@ -26,7 +36,8 @@ const obfuscate = function(word) {
     progress.innerText = obfuscateLetters.join("");
 }
 
-obfuscate(word);
+  // Ready player one!
+  getWord();
 
 button.addEventListener("click", function (e) {
     e.preventDefault();
@@ -59,6 +70,7 @@ const makeGuess = function (guess) {
     } else {
         guessed.push(guess);
         console.log(guessed);
+        updateRemGuess(guess);
         updateGuessed();
         updateProgress(guessed);
     }
@@ -92,10 +104,31 @@ progress.innerText = revealWord.join("");
 checkIfWin();
 };
 
+const updateRemGuess = function(guess) {
+    const upperWord = word.toUpperCase();
+    if (!upperWord.includes(guess)) {
+        message.innerText = `Sorry, the word has no ${guess}.`;
+        remGuess -= 1;
+    } else {
+        message.innerText = `Good guess! The word includes the letter ${guess}!`;
+    }
+
+if (remGuess === 0) {
+    message.innerHTML = `Game over! The word was <span class="highlight">${word}</span>.`;
+    remSpan.innerText = `${remGuess} guesses`;
+  } else if (remGuess === 1) {
+    remSpan.innerText = `${remGuess} guess`;
+  } else {
+    remSpan.innerText = `${remGuess} guesses`;
+  }
+};
+
 const checkIfWin = function () {
     if (word.toUpperCase() === progress.innerText) {
         message.classList.add("win");
         message.innerHTML = `<p class="highlight">You guessed the correct word! Congrats!</p>`;
     }
 };
+
+
 
